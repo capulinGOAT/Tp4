@@ -36,3 +36,8 @@ def test_validar_item_no_modifica_diccionario_original():
     item_copia = dict(item_original)
     validar_item(item_original)
     assert item_original == item_copia
+
+def test_calcular_subtotal_ignora_precio_enviado_por_cliente():
+    items = [{"producto": "buzo", "talle": "M", "cantidad": 1, "precio": Decimal("1.00")}]
+    subtotal = calcular_subtotal(items)
+    assert subtotal == Decimal("24999.90")
