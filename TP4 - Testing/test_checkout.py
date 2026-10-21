@@ -27,3 +27,6 @@ def codigo_de_error(funcion, *args):
 
 def test_cantidad_cero_es_invalida():
     assert codigo_de_error(validar_item, item(cantidad=0)) == "CANTIDAD_INVALIDA"
+
+def test_cantidad_10_es_valida():
+    validar_item({"producto": "buzo", "talle": "M", "cantidad": 10})
