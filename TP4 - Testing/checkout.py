@@ -3,9 +3,9 @@ from datetime import date
 from decimal import Decimal
 
 class CheckoutError(Exception):
-    def __init__(self, code, mensaje):
+    def __init__(self, codigo, mensaje):
         super().__init__(mensaje)
-        self.code = code
+        self.codigo = codigo
         self.mensaje = mensaje
 
 
