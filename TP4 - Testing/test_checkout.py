@@ -30,3 +30,9 @@ def test_cantidad_cero_es_invalida():
 
 def test_cantidad_10_es_valida():
     validar_item({"producto": "buzo", "talle": "M", "cantidad": 10})
+
+def test_validar_item_no_modifica_diccionario_original():
+    item_original = {"producto": "buzo", "talle": "  m  ", "cantidad": 1}
+    item_copia = dict(item_original)
+    validar_item(item_original)
+    assert item_original == item_copia
