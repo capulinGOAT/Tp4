@@ -41,3 +41,8 @@ def test_calcular_subtotal_ignora_precio_enviado_por_cliente():
     items = [{"producto": "buzo", "talle": "M", "cantidad": 1, "precio": Decimal("1.00")}]
     subtotal = calcular_subtotal(items)
     assert subtotal == Decimal("24999.90")
+
+def test_aplicar_cupon_acepta_minusculas():
+    subtotal = Decimal("10000.00")
+    descuento = calcular_descuento(subtotal, 1, "egresados2026", date(2026, 10, 1))
+    assert descuento == Decimal("1500.00")
