@@ -56,7 +56,7 @@ def calcular_descuento(subtotal, cantidad_prendas, cupon=None, fecha=date.today(
         descuento += subtotal * 0.10
 
     if cupon != None:
-        codigo = cupon.strip()
+        codigo = cupon.strip().upper()
 
         if codigo not in CUPONES:
             raise CheckoutError("CUPON_INVALIDO", "El cupón no existe")
@@ -66,7 +66,7 @@ def calcular_descuento(subtotal, cantidad_prendas, cupon=None, fecha=date.today(
         if datos["tipo"] == "porcentaje":
             if not fecha < datos["vence"]:
                 raise CheckoutError("CUPON_VENCIDO", "El cupón está vencido")
-            descuento += subtotal * datos["valor"]
+            descuento += subtotal * Decimal(str(datos["valor"]))
 
         elif datos["tipo"] == "fijo":
             if subtotal < datos["minimo"]:
