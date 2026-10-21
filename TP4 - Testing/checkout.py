@@ -32,10 +32,10 @@ ENVIOS = {
 
 
 def validar_item(item):
-    item["talle"] = item["talle"].upper()
+    talle = item["talle"].strip().upper() if isinstance(item.get("talle"), str) else None
 
-    if item["talle"] not in TALLES:
-        raise CheckoutError("TALLE_INVALIDO", f"Talle inválido: {item['talle']}")
+    if talle not in TALLES:
+        raise CheckoutError("TALLE_INVALIDO", f"Talle inválido: {item.get('talle')}")
 
     if not (1 <= item["cantidad"] <= 10):
         raise CheckoutError("CANTIDAD_INVALIDA", "La cantidad debe estar entre 1 y 10")
