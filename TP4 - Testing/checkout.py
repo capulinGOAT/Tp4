@@ -1,6 +1,6 @@
 import json
 from datetime import date
-
+from decimal import Decimal
 
 class CheckoutError(Exception):
     def __init__(self, code, mensaje):
@@ -41,17 +41,12 @@ def validar_item(item):
         raise CheckoutError("CANTIDAD_INVALIDA", "La cantidad debe estar entre 1 y 10")
 
 
-def calcular_subtotal(carrito):
-    subtotal = 0
-    for item in carrito:
-        validar_item(item)
-        try:
-            precio = item.get("precio", CATALOGO[item["producto"]])
-        except:
-            continue
+def calcular_subtotal(items):
+    subtotal = Decimal("0.00")
+    for item in items:
+        precio = Decimal(str(CATALOGO[item["producto"]]))
         subtotal += precio * item["cantidad"]
-
-    return round(subtotal, 2)
+    return subtotal
 
 
 def calcular_descuento(subtotal, cantidad_prendas, cupon=None, fecha=date.today()):
