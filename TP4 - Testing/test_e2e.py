@@ -37,7 +37,56 @@ def compra(**cambios):
     return cuerpo
 
 
-def test_una_ruta_inexistente_devuelve_404(url):
-    status, cuerpo = pedir(url, "GET", "/api/v1/otra")
+def assert_error(cuerpo, codigo):
+    assert set(cuerpo) == {"error"}
+    assert set(cuerpo["error"]) == {"code", "message"}
+    assert cuerpo["error"]["code"] == codigo
+    assert isinstance(cuerpo["error"]["message"], str) and cuerpo["error"]["message"]
+
+
+# ---------- Un test por endpoint ----------
+
+def test_post_crea_un_pedido(url):
+    status, cuerpo = pedir(url, "POST", RUTA, compra(
+        carrito=[{"producto": "remera", "talle": "M", "cantidad": 1}],
+        cupon="EGRESADOS2026", fecha="2026-11-30"))
+    assert status == 201
+    assert isinstance(cuerpo["id"], int)
+    assert cuerpo == {"id": cuerpo["id"], "subtotal": "11999.50", "descuento": "1799.93",
+                      "envio": "2500.00", "total": "12699.57"}
+
+
+def test_get_devuelve_el_pedido(url):
+    _, creado = pedir(url, "POST", RUTA, compra())
+    status, pedido = pedir(url, "GET", f"{RUTA}/{creado['id']}")
+    assert status == 200
+    assert set(pedido) == {"id", "email", "zona", "cupon", "subtotal", "descuento", "envio", "total", "items"}
+    assert pedido["id"] == creado["id"]
+    assert pedido["total"] == creado["total"]
+
+
+# ---------- 4 errores de R11 ----------
+
+def test_json_invalido_400(url):
+    status, cuerpo = pedir(url, "POST", RUTA, crudo=b"no es json")
+    assert status == 400
+    assert_error(cuerpo, "JSON_INVALIDO")
+
+
+def test_datos_incompletos_400_email_de_otro_tipo(url):
+    status, cuerpo = pedir(url, "POST", RUTA, compra(email=123))
+    assert status == 400
+    assert_error(cuerpo, "DATOS_INCOMPLETOS")
+
+
+def test_talle_invalido_422(url):
+    status, cuerpo = pedir(url, "POST", RUTA, compra(
+        carrito=[{"producto": "buzo", "talle": "XXXL", "cantidad": 1}]))
+    assert status == 422
+    assert_error(cuerpo, "TALLE_INVALIDO")
+
+
+def test_pedido_inexistente_404(url):
+    status, cuerpo = pedir(url, "GET", f"{RUTA}/999")
     assert status == 404
-    assert cuerpo["error"]["code"] == "RUTA_INEXISTENTE"
+    assert_error(cuerpo, "PEDIDO_INEXISTENTE")
